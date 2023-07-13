@@ -1,0 +1,31 @@
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: {{ .Values.persistentVolume.namePV}}
+  labels:
+    type: {{ .Values.persistentVolume.labelType}}
+    app: {{ .Values.appName}}
+spec:
+  storageClassName: {{ .Values.persistentVolume.storageClassName}}
+  capacity:
+    storage: {{ .Values.persistentVolume.capacityStorage}}
+  accessModes:
+    - {{ .Values.persistentVolume.accessModes}}
+  hostPath:
+    path: {{ .Values.persistentVolume.hostPath}}
+
+---
+
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Values.persistentVolume.namePVC}}
+  labels:
+    app: {{ .Values.appName}}
+spec:
+  storageClassName: {{ .Values.persistentVolume.storageClassName}}
+  accessModes:
+    - {{ .Values.persistentVolume.accessModes}}
+  resources:
+    requests:
+      storage: {{ .Values.persistentVolume.capacityStorage}}

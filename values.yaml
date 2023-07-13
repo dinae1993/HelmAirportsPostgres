@@ -1,0 +1,35 @@
+appName: postgres
+port: 5432
+
+persistentVolume:
+    namePV: postgres-pv-volume
+    namePVC: postgres-pv-claim
+    labelType: local
+    storageClassName: manual
+    capacityStorage: 5Gi
+    accessModes: ReadWriteMany
+    hostPath: /mnt/data
+
+configMap:
+    name: postgres-config
+    dev1Email: dan.iacob.ext@siemens.com
+    dev2Email: elena.dascalu.ext@siemens.com
+
+secret:
+    name: secret-auth
+    database: db_airports
+    keyDatabase: database
+    keyUsername: username
+    keyPassword: password
+
+deployment:
+    image: postgis/postgis
+    env:
+        database: POSTGRES_DB
+        username: POSTGRES_USERNAME
+        password: POSTGRES_PASSWORD
+    imagePullPolicy: IfNotPresent
+    volumeMounts:
+        mountPath: /var/lib/postgresql/data
+        name: postgredb
+

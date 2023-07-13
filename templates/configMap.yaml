@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configMap.name}}
+  labels:
+    app: {{ .Values.appName}}
+data:
+  developer1_email: {{ .Values.configMap.dev1Email}}
+  developer2_email: {{ .Values.configMap.dev2Email}}

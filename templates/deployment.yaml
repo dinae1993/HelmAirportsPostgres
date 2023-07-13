@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appName}}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.appName}}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName}}
+    spec:
+      containers:
+        - name: {{ .Values.appName}}
+          image: {{ .Values.deployment.image}}
+          readinessProbe:
+            exec:
+              command: ["psql", "-Upostgres", "-ddb_airports", "-c", "SELECT 1"]
+            initialDelaySeconds: 10
+            timeoutSeconds: 10
+          livenessProbe:
+            exec:
+              command: ["psql", "-Upostgres", "-ddb_airports", "-c", "SELECT 1"]
+            initialDelaySeconds: 30
+            timeoutSeconds: 10
+          env:
+            - name: {{ .Values.deployment.env.database}}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.name}}
+                  key: {{ .Values.secret.keyDatabase}}
+            - name: {{ .Values.deployment.env.username}}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.name}}
+                  key: {{ .Values.secret.keyUsername}}
+            - name: {{ .Values.deployment.env.password}}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secret.name}}
+                  key: {{ .Values.secret.keyPassword}}
+          imagePullPolicy: {{ .Values.deployment.imagePullPolicy}}
+          ports:
+            - containerPort: {{ .Values.port}}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.configMap.name}}
+          volumeMounts:
+            - mountPath: {{ .Values.deployment.volumeMounts.mountPath}}
+              name: {{ .Values.deployment.volumeMounts.name}}
+      volumes:
+        - name: {{ .Values.deployment.volumeMounts.name}}
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistentVolume.namePVC}}
